@@ -1,0 +1,18 @@
+{% extends 'template.html' %}
+
+{% block scripts %}
+<script src="public/js/dashboard.js"></script>
+{% endblock %}
+
+{% block style %}
+<style>
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="message"></div>
+<script>
+  document.body.onload = displayVault;
+</script>
+{% endblock %}

@@ -1,5 +1,8 @@
+function createCsrfTokenField() {
+
+}
+
 function catchGenericError(error) {
-  console.log(error);
   window.alert('An error occured on the server.');
 }
 
@@ -38,11 +41,13 @@ function sendHTTPRequest(url, params, responseHandler, sendGet, handleAsJson, er
       var url = url + '?params=' + encodeURIComponent(JSON.stringify(params));
       xhr.open('GET', url, true);
       xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader("X-CSRF-Token", csrf_token);
       xhr.send();
   }
   else {
       xhr.open('POST', url, true);
       xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader("X-CSRF-Token", csrf_token);
       var data = JSON.stringify(params);
       xhr.send(data);
   }

@@ -23,13 +23,22 @@ function newUser() {
     return;
   }
   document.getElementById('error').innerText = '';
+  var hash = sha256(username + password);
+  for (var i = 0; i < 4999; i++) {
+    hash = sha256(hash);
+  }
+  window.sessionStorage.decKey = hash;
+  hash = sha256(hash);
   var userInfo = {
     username: username,
-    password: sha256(username + password),
+    hash: hash,
   };
   sendPostRequest('/newUser', userInfo, function(response) {
     if (response.success) {
-      window.location = 'home/' + response.user;
+      sendPostRequest('/home', {token: response.token}, function(secondResponse) {
+        window.sessionStorage.vault = secondResponse.vault;
+        window.location = '/dashboard';
+      });
     }
     else {
       document.getElementById('error').innerText = '⚠️ ' + response.message;
