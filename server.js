@@ -96,7 +96,7 @@ app.use(csrf());
 app.use(router);
 app.use(bodyParser.json());
 
-app.use(function(req, res, next){
+app.use(function(req, res, next) {
   if (req.secure) {
     next();
   }
@@ -105,7 +105,7 @@ app.use(function(req, res, next){
   }
 });
 
-app.use('/home', function(req, res, next){
+app.use('/home', function(req, res, next) {
   if (!req.body.token) {
     res.redirect('/');
   }
@@ -124,23 +124,17 @@ app.use('/home', function(req, res, next){
 
 app.use('/public', express.static(__dirname + '/public'));
 
-app.get('/', function(req, res){
+app.get('/', function(req, res) {
   res.locals.csrfToken = req.csrfToken();
   sendFile(res, 'login.html');
 });
 
-app.get('/signUp', function(req, res){
+app.get('/signUp', function(req, res) {
   res.locals.csrfToken = req.csrfToken();
   sendFile(res, 'signUp.html');
 });
 
-app.post('/home', function(req, res){
-  res.locals.csrfToken = req.csrfToken();
-  var data = JSON.parse(fs.readFileSync('db/' + req.username, 'utf-8'));
-  sendSuccess(res, {vault: data.vault});
-});
-
-app.get('/dashboard', function(req, res){
+app.get('/dashboard', function(req, res) {
   res.locals.csrfToken = req.csrfToken();
   sendFile(res, 'dashboard.html');
 });
@@ -150,7 +144,6 @@ app.post('/login', function(req, res) {
   if (fs.existsSync(fileName)) {
     var loginInfo = req.body;
     var userInfo = JSON.parse(fs.readFileSync(fileName, 'utf-8'));
-    sha256(hexToBin(userInfo.salt) + userInfo.hash)
     if (userInfo.hash == sha256(hexToBin(userInfo.salt) + loginInfo.hash)) {
       sendSuccess(res, {token: addSession(userInfo.username)});
     }
@@ -163,7 +156,7 @@ app.post('/login', function(req, res) {
   }
 });
 
-app.post('/newUser', function(req, res){
+app.post('/newUser', function(req, res) {
   var fileName = 'db/' + req.body.username;
   if (!fs.existsSync(fileName)) {
     var userInfo = req.body;
@@ -173,6 +166,7 @@ app.post('/newUser', function(req, res){
     userInfo.salt = randomNumber(64, 16);
     userInfo.hash = sha256(hexToBin(userInfo.salt) + userInfo.hash)
     userInfo.vault = '';
+    userInfo.ctr = '';
     var writeStream = fs.createWriteStream(fileName);
     writeStream.write(JSON.stringify(userInfo));
     writeStream.end();
@@ -180,6 +174,33 @@ app.post('/newUser', function(req, res){
   }
   else {
     sendError(res, 'Username already in use!')
+  }
+});
+
+app.post('/home', function(req, res) {
+  res.locals.csrfToken = req.csrfToken();
+  var data = JSON.parse(fs.readFileSync('db/' + req.username, 'utf-8'));
+  sendSuccess(res, {vault: data.vault, ctr: data.ctr});
+});
+
+app.post('/updateVault', function(req, res) {
+  var fileName = 'db/' + req.body.username;
+  if (fs.existsSync(fileName)) {
+    var updateInfo = req.body;
+    var userInfo = JSON.parse(fs.readFileSync(fileName, 'utf-8'));
+    if (userInfo.hash == sha256(hexToBin(userInfo.salt) + updateInfo.hash)) {
+      userInfo.vault = updateInfo.vault;
+      userInfo.ctr = updateInfo.ctr;
+      var writeStream = fs.createWriteStream(fileName);
+      writeStream.write(JSON.stringify(userInfo));
+      sendSuccess(res);
+    }
+    else {
+      sendError(res, 'wrong credentials');
+    }
+  }
+  else {
+    sendError(res, 'no user found');
   }
 });
 

@@ -27,7 +27,7 @@ function newUser() {
   for (var i = 0; i < 4999; i++) {
     hash = sha256(hash);
   }
-  window.sessionStorage.decKey = hash;
+  window.sessionStorage['decKey'] = hash;
   hash = sha256(hash);
   var userInfo = {
     username: username,
@@ -36,7 +36,9 @@ function newUser() {
   sendPostRequest('/newUser', userInfo, function(response) {
     if (response.success) {
       sendPostRequest('/home', {token: response.token}, function(secondResponse) {
-        window.sessionStorage.vault = secondResponse.vault;
+        window.sessionStorage['vault'] = secondResponse.vault;
+        window.sessionStorage['ctr'] = secondResponse.ctr;
+        window.sessionStorage['user'] = username;
         window.location = '/dashboard';
       });
     }
