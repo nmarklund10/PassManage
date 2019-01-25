@@ -1,5 +1,5 @@
 function newUser() {
-  var username = document.getElementsByClassName('username')[0].value;
+  var username = document.getElementById('username').value;
   var password = document.getElementsByClassName('password')[0].value;
   var passwordCheck = document.getElementsByClassName('password')[1].value;
   if (username == '') {

@@ -1,6 +1,6 @@
 function login() {
-  var username = document.getElementsByClassName('username')[0].value;
-  var password = document.getElementsByClassName('password')[0].value;
+  var username = document.getElementById('username').value;
+  var password = document.getElementById('password').value;
   if (username == '') {
     document.getElementById('error').innerText = '⚠️ Username field required!';
     return;
