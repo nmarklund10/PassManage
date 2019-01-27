@@ -1,5 +1,3 @@
-globals = {};
-
 function generateCounter() {
   var ctrPart = new Uint32Array(4);
   window.crypto.getRandomValues(ctrPart);
@@ -29,22 +27,12 @@ function updateVault(vault, ctr) {
   });
 }
 
-function encryptVault() {
-  if (globals.vault.length != 0) {
-    var decryptedVault = aesjs.utils.utf8.toBytes(JSON.stringify(globals.vault));
-    var ctr = generateCounter();
-    var aes = new aesjs.ModeOfOperation.ctr(globals.key, aesjs.utils.hex.toBytes(ctr));
-    var encryptedVault = aesjs.utils.hex.fromBytes(aes.encrypt(decryptedVault));
-    updateVault(encryptedVault, ctr);
-  }
-}
-
 function clearVault() {
   updateVault('', '');
 }
 
 function clearDialog() {
-  Metro.dialog.create({
+  var dialog = Metro.dialog.create({
     title: 'This will delete ALL sites in your vault!',
     actions: [
       {
@@ -57,11 +45,17 @@ function clearDialog() {
               {
                 caption: 'Yes',
                 cls: 'js-dialog-close primary',
-                //action: clearVault()
+                onclick: function() {
+                  clearVault();
+                  Metro.dialog.close(dialog);
+                }
               },
               {
                 caption: 'No',
-                cls: 'js-dialog-close secondary'
+                cls: 'js-dialog-close secondary',
+                onclick: function() {
+                  Metro.dialog.close(dialog);
+                }
               }
             ]
           });
@@ -77,20 +71,18 @@ function clearDialog() {
 
 function decryptVault() {
   if (window.sessionStorage['vault'] == '') {
-    globals.vault = [];
-    return;
+    return '[]';
   }
   var encryptedVault = aesjs.utils.hex.toBytes(window.sessionStorage['vault']);
   var ctr = aesjs.utils.hex.toBytes(window.sessionStorage['ctr']);
-  var aes = new aesjs.ModeOfOperation.ctr(globals.key, ctr);
-  globals.vault = JSON.parse(aesjs.utils.utf8.fromBytes(aes.decrypt(encryptedVault)));
+  var key = aesjs.utils.hex.toBytes(window.sessionStorage['decKey']);
+  var aes = new aesjs.ModeOfOperation.ctr(key, ctr);
+  return aesjs.utils.utf8.fromBytes(aes.decrypt(encryptedVault));
 }
 
 function displayVault() {
   if ('vault' in window.sessionStorage && 'decKey' in window.sessionStorage) {
-    globals.key = aesjs.utils.hex.toBytes(window.sessionStorage['decKey']);
-    decryptVault();
-    document.getElementById('message').innerText = 'Your Stuff: ' + JSON.stringify(globals.vault);
+    document.getElementById('message').innerText = 'Your Stuff: ' + decryptVault();
   }
   else {
     window.sessionStorage = {};
@@ -126,6 +118,14 @@ function openAddSite() {
 }
 
 function addSite(url, username, password) {
-  globals.vault.push({url: url, username: username, password: password});
-  encryptVault();
+  var temp_vault = JSON.parse(decryptVault());
+  console.log(typeof(temp_vault));
+  temp_vault.push({url: url, username: username, password: password});
+  console.log(temp_vault);
+  var decryptedVault = aesjs.utils.utf8.toBytes(JSON.stringify(temp_vault));
+  var ctr = generateCounter();
+  var key = aesjs.utils.hex.toBytes(window.sessionStorage['decKey']);
+  var aes = new aesjs.ModeOfOperation.ctr(key, aesjs.utils.hex.toBytes(ctr));
+  var encryptedVault = aesjs.utils.hex.fromBytes(aes.encrypt(decryptedVault));
+  updateVault(encryptedVault, ctr);
 }
