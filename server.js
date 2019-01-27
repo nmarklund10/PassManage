@@ -17,6 +17,8 @@ var port = 443;
 var session = require('express-session');
 var csrf = require('csurf');
 var nunjucks = require('nunjucks');
+var Sequelize = require('sequelize');
+var pg = require('pg');
 
 var sessions = {};
 
@@ -75,6 +77,52 @@ function removeSession(token) {
   delete sessions[token];
 }
 
+var connStr = "postgres://dolboqpe:TNtV1OkpdshJq_oaRbTZB3xKdowhK8Jy@stampy.db.elephantsql.com:5432/dolboqpe";
+const sequelize = new Sequelize(connStr, {
+  dialect: 'postgres',
+  operatorsAliases: false
+});
+
+const Users = sequelize.define('users', {
+  username: Sequelize.STRING(20),
+  hash: Sequelize.STRING(256),
+  salt: Sequelize.STRING(16),
+  ctr: Sequelize.STRING(32),
+  vault: Sequelize.STRING(65535)
+},{
+  timestamps: false
+});
+
+function createUser(username, hash, salt, ctr='', vault='') {
+  return Users.create({
+    username: username,
+    hash: hash,
+    salt: salt,
+    ctr: ctr,
+    vault: vault
+  });
+}
+
+function findUser(username) {
+  return Users.findOne({
+    where: {
+      username: username
+    }
+  });
+}
+
+function updateUser(username, updateData={}) {
+  Users.update(updateData, { where: {username: username}});
+}
+
+function deleteUser(username) {
+  return Users.destroy({
+    where: {
+      username: username
+    }
+  });
+}
+
 app.use(session({
   secret: randomNumber(8, 16),
   resave: true,
@@ -111,7 +159,7 @@ app.use('/home', function(req, res, next) {
   }
   else {
     var user = getSession(req.body.token);
-    if (user == "") {
+    if (user == '') {
       res.redirect('/');
     }
     else {
@@ -140,68 +188,63 @@ app.get('/dashboard', function(req, res) {
 });
 
 app.post('/login', function(req, res) {
-  var fileName = 'db/' + req.body.username;
-  if (fs.existsSync(fileName)) {
-    var loginInfo = req.body;
-    var userInfo = JSON.parse(fs.readFileSync(fileName, 'utf-8'));
-    if (userInfo.hash == sha256(hexToBin(userInfo.salt) + loginInfo.hash)) {
-      sendSuccess(res, {token: addSession(userInfo.username)});
+  var loginInfo = req.body;
+  findUser(loginInfo.username).then(function(userInfo) {
+    if (userInfo) {
+      if (userInfo.hash == sha256(hexToBin(userInfo.salt) + loginInfo.hash)) {
+        sendSuccess(res, {token: addSession(userInfo.username)});
+      }
+      else {
+        sendError(res, 'Incorrect username or password!');
+      }
     }
     else {
-      sendError(res, 'Incorrect username or password!');
+      sendError(res, 'Username not found!');
     }
-  }
-  else {
-    sendError(res, 'Username not found!');
-  }
+  });
 });
 
 app.post('/newUser', function(req, res) {
-  var fileName = 'db/' + req.body.username;
-  if (!fs.existsSync(fileName)) {
-    var userInfo = req.body;
-    if (!fs.existsSync('db/')) {
-      fs.mkdirSync('db');
+  var userInfo = req.body;
+  findUser(userInfo.username).then(function(user) {
+    if (user) {
+      sendError(res, 'Username already in use!')
     }
-    userInfo.salt = randomNumber(64, 16);
-    userInfo.hash = sha256(hexToBin(userInfo.salt) + userInfo.hash)
-    userInfo.vault = '';
-    userInfo.ctr = '';
-    var writeStream = fs.createWriteStream(fileName);
-    writeStream.write(JSON.stringify(userInfo));
-    writeStream.end();
-    sendSuccess(res, {token: addSession(userInfo.username)});
-  }
-  else {
-    sendError(res, 'Username already in use!')
-  }
+    else {
+      userInfo.salt = randomNumber(64, 16);
+      userInfo.hash = sha256(hexToBin(userInfo.salt) + userInfo.hash);
+      createUser(userInfo.username, userInfo.hash, userInfo.salt);
+      sendSuccess(res, {token: addSession(userInfo.username)});
+    }
+  });
 });
 
 app.post('/home', function(req, res) {
   res.locals.csrfToken = req.csrfToken();
-  var data = JSON.parse(fs.readFileSync('db/' + req.username, 'utf-8'));
-  sendSuccess(res, {vault: data.vault, ctr: data.ctr});
+  findUser(req.username).then(function(vaultData) {
+    sendSuccess(res, {vault: vaultData.vault, ctr: vaultData.ctr});
+  });
 });
 
 app.post('/updateVault', function(req, res) {
-  var fileName = 'db/' + req.body.username;
-  if (fs.existsSync(fileName)) {
-    var updateInfo = req.body;
-    var userInfo = JSON.parse(fs.readFileSync(fileName, 'utf-8'));
-    if (userInfo.hash == sha256(hexToBin(userInfo.salt) + updateInfo.hash)) {
-      userInfo.vault = updateInfo.vault;
-      userInfo.ctr = updateInfo.ctr;
-      var writeStream = fs.createWriteStream(fileName);
-      writeStream.write(JSON.stringify(userInfo));
-      sendSuccess(res);
+  var updateInfo = req.body;
+  findUser(updateInfo.username).then(function(userInfo) {
+    if (userInfo) {
+      if (userInfo.hash == sha256(hexToBin(userInfo.salt) + updateInfo.hash)) {
+        updateUser(userInfo.username, {
+          vault: updateInfo.vault,
+          ctr: updateInfo.ctr
+        });
+        sendSuccess(res);
+      }
+      else {
+        sendError(res, 'wrong credentials');
+      }
     }
     else {
-      sendError(res, 'wrong credentials');
+      sendError(res, 'no user found');
     }
-  }
-  else {
-    sendError(res, 'no user found');
-  }
+  });
 });
 
 httpsServer.listen(port, () => console.log('Listening on https://localhost:' + port));
