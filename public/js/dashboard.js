@@ -69,6 +69,11 @@ function clearDialog() {
   });
 }
 
+function initialize() {
+  document.getElementById('welcome').innerText = window.sessionStorage['user'];
+  displayVault();
+}
+
 function decryptVault() {
   if (window.sessionStorage['vault'] == '') {
     return '[]';
