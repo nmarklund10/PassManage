@@ -1,3 +1,21 @@
+function setupEnterKeyListeners() {
+  document.getElementById('username').addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+      newUser();
+    }
+  });
+  document.getElementsByClassName('password')[0].addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+      newUser();
+    }
+  });
+  document.getElementsByClassName('password')[1].addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+      newUser();
+    }
+  });
+}
+
 function newUser() {
   var username = document.getElementById('username').value;
   var password = document.getElementsByClassName('password')[0].value;

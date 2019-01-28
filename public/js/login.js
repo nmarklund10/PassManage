@@ -1,3 +1,16 @@
+function setupEnterKeyListeners() {
+  document.getElementById('username').addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+      login();
+    }
+  });
+  document.getElementById('password').addEventListener('keyup', function(e) {
+    if (e.keyCode === 13) {
+      login();
+    }
+  });
+}
+
 function login() {
   var username = document.getElementById('username').value;
   var password = document.getElementById('password').value;
