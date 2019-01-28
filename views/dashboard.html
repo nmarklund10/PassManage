@@ -13,10 +13,17 @@
 {% endblock %}
 
 {% block content %}
+<div data-role="appbar" data-expand-point="md">
+  <a href="#" class="brand">PassManage</a>
+  <div style="width: 5%"></div>
+  <input type="text" style="width:75%" data-role="input" data-search-button="true">
+  <div style="width: 5%"></div>
+  <div id="welcome" style="color: rgb(0, 78, 109)"></div>
+</div>
 <div id="message"></div>
 <button class="button primary" onclick="openAddSite()">Add Site</button>
 <button class="button primary" onclick="clearDialog()">Clear Vault</button>
 <script>
-  document.body.onload = displayVault;
+  document.body.onload = initialize;
 </script>
 {% endblock %}
