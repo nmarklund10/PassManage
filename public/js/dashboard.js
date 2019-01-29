@@ -71,6 +71,7 @@ function clearDialog() {
 
 function initialize() {
   document.getElementById('welcome').innerText = window.sessionStorage['user'];
+  document.getElementById('user').src = '/public/images/user.svg';
   displayVault();
 }
 

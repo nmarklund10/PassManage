@@ -13,13 +13,19 @@
 {% endblock %}
 
 {% block content %}
-<div data-role="appbar" data-expand-point="md">
-  <a href="#" class="brand">PassManage</a>
+<div data-role="appbar" style="height: 8%" data-expand-point="md">
+  <div style="width: 1%"></div>
+  <img src="/public/images/favicon.jpg" style="height: 90%; padding-right: 0.5%" alt="PassManage">
+  <div style="color: rgb(0, 78, 109); font-size: 130%; cursor: default">PassManage</div>
   <div style="width: 5%"></div>
   <input type="text" style="width:75%" data-role="input" data-search-button="true">
   <div style="width: 5%"></div>
-  <div id="welcome" style="color: rgb(0, 78, 109)"></div>
+  <a class="brand" style="margin-right: 1%">
+    <img id="user" style="height: 90%; padding-right: 4%" alt="User">
+    <div id="welcome" style="color: rgb(0, 78, 109); font-size: 125%"></div>
+  </a>
 </div>
+<div style="height:120px"></div>
 <div id="message"></div>
 <button class="button primary" onclick="openAddSite()">Add Site</button>
 <button class="button primary" onclick="clearDialog()">Clear Vault</button>
