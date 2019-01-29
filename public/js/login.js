@@ -9,6 +9,8 @@ function setupEnterKeyListeners() {
       login();
     }
   });
+  document.getElementById('username').focus();
+  document.getElementById('username').select();
 }
 
 function login() {

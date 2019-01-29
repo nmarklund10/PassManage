@@ -14,6 +14,8 @@ function setupEnterKeyListeners() {
       newUser();
     }
   });
+  document.getElementById('username').focus();
+  document.getElementById('username').select();
 }
 
 function newUser() {
