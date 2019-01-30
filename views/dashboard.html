@@ -20,10 +20,16 @@
   <div style="width: 5%"></div>
   <input type="text" style="width:75%" data-role="input" data-search-button="true">
   <div style="width: 5%"></div>
-  <a class="brand" style="margin-right: 1%">
-    <img id="user" style="height: 90%; padding-right: 4%" alt="User">
-    <div id="welcome" style="color: rgb(0, 78, 109); font-size: 125%"></div>
-  </a>
+  <div class="pos-relative">
+    <a class="brand dropdown-toggle" style="cursor:pointer">
+      <img id="user" style="height: 90%; padding-right: 4%" alt="User">
+      <span id="welcome" style="color: rgb(0, 78, 109); font-size: 130%"></span>
+    </a>
+    <ul class="d-menu" data-role="dropdown">
+      <li onclick="clearSession()"><a href="/">Sign Out</a></li>
+    </ul>
+  </div>
+  <div style="width: 1%"></div>
 </div>
 <div style="height:120px"></div>
 <div id="message"></div>

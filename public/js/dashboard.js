@@ -75,6 +75,12 @@ function initialize() {
   displayVault();
 }
 
+function clearSession() {
+  delete window.sessionStorage.decKey;
+  delete window.sessionStorage.vault;
+  delete window.sessionStorage.ctr;
+  delete window.sessionStorage.user;
+}
 function decryptVault() {
   if (window.sessionStorage['vault'] == '') {
     return '[]';
