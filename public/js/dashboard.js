@@ -94,7 +94,13 @@ function decryptVault() {
 
 function displayVault() {
   if ('vault' in window.sessionStorage && 'decKey' in window.sessionStorage) {
-    document.getElementById('message').innerText = 'Your Stuff: ' + decryptVault();
+    var temp_vault = JSON.parse(decryptVault());
+    if (temp_vault.length == 0) {
+      var newRow = document.createElement('div');
+      newRow.className = 'cell-4 offset-4';
+      newRow.innerText = 'You have no sites yet!  Press the \'Add Site\' button to get started!';
+      document.getElementById('row1').appendChild(newRow);
+    }
   }
   else {
     window.sessionStorage = {};
