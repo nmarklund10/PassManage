@@ -75,6 +75,10 @@ function initialize() {
   displayVault();
 }
 
+function searchVault(input) {
+  //TODO
+}
+
 function clearSession() {
   delete window.sessionStorage.decKey;
   delete window.sessionStorage.vault;
@@ -95,11 +99,15 @@ function decryptVault() {
 function displayVault() {
   if ('vault' in window.sessionStorage && 'decKey' in window.sessionStorage) {
     var temp_vault = JSON.parse(decryptVault());
+    console.log(temp_vault.length);
     if (temp_vault.length == 0) {
       var newRow = document.createElement('div');
       newRow.className = 'cell-4 offset-4';
-      newRow.innerText = 'You have no sites yet!  Press the \'Add Site\' button to get started!';
+      newRow.innerText = '\nYou have no sites yet!';
       document.getElementById('row1').appendChild(newRow);
+    }
+    else {
+      document.getElementById('row1').innerHTML = '';
     }
   }
   else {
@@ -109,22 +117,41 @@ function displayVault() {
 }
 
 function openAddSite() {
-  Metro.dialog.create({
+  var dialog = Metro.dialog.create({
     title: "Add Site",
     content: '<input name="url" type="text" id="url" placeholder="Site URL"/> \
               <div class="p-1"></div> \
+              <input name="name" type="text" id="name" placeholder="Name"/> \
+              <div class="p-1"></div> \
               <input name="username" type="text" id="username" placeholder="Username"/> \
               <div class="p-1"></div> \
-              <input name="password" type="password" id="password" placeholder="Password"/>',
+              <input name="password" type="password" id="password" placeholder="Password"/> \
+              <div class="p-1" style="color: red" id="error"></div>',
     actions: [
       {
         caption: 'Add',
-        cls: 'js-dialog-close primary',
+        cls: 'primary',
         onclick: function() {
-          var url = document.getElementById('url').value;
-          var username = document.getElementById('username').value;
-          var password = document.getElementById('password').value;
-          addSite(url, username, password);
+          var url = document.getElementById('url').value.trim();
+          var name = document.getElementById('name').value.trim();
+          var username = document.getElementById('username').value.trim();
+          var password = document.getElementById('password').value.trim();
+          if (url == '') {
+            document.getElementById('error').innerText = '⚠️ URL field required!';
+          }
+          else if (name == '') {
+            document.getElementById('error').innerText = '⚠️ Name field required!';
+          }
+          else if (username == '') {
+            document.getElementById('error').innerText = '⚠️ Username field required!';
+          }
+          else if (password == '') {
+            document.getElementById('error').innerText = '⚠️ Password field required!';
+          }
+          else {
+            addSite(url, name, username, password);
+            Metro.dialog.close(dialog);
+          }
         }
       },
       {
@@ -135,10 +162,9 @@ function openAddSite() {
   });
 }
 
-function addSite(url, username, password) {
+function addSite(url, name, username, password) {
   var temp_vault = JSON.parse(decryptVault());
-  console.log(typeof(temp_vault));
-  temp_vault.push({url: url, username: username, password: password});
+  temp_vault.push({url: url, name: name, username: username, password: password});
   console.log(temp_vault);
   var decryptedVault = aesjs.utils.utf8.toBytes(JSON.stringify(temp_vault));
   var ctr = generateCounter();
