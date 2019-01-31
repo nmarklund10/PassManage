@@ -105,8 +105,10 @@ function displayVault() {
       newRow.className = 'cell-4 offset-4';
       newRow.innerText = '\nYou have no sites yet!';
       document.getElementById('row1').appendChild(newRow);
+      document.getElementsByClassName('action-button')[1].style.visibility = 'hidden';
     }
     else {
+      document.getElementsByClassName('action-button')[1].style.visibility = 'visible';
       document.getElementById('row1').innerHTML = '';
     }
   }
