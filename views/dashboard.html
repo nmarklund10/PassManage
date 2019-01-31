@@ -8,7 +8,28 @@
 
 {% block style %}
 <style>
-
+  html,body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
+  .floatButtons {
+    bottom: 0;
+    right: 0;
+    position: fixed;
+    z-index: 3000;
+    margin-bottom: 2%;
+  }
+  #addSite {
+    margin-right: 8%;
+  }
+  #clearVault {
+    margin-right: 2%;
+  }
+  .row {
+    text-align: center;
+    font-size:150%;
+  }
 </style>
 {% endblock %}
 
@@ -18,7 +39,8 @@
   <img src="/public/images/favicon.jpg" style="height: 90%; padding-right: 0.5%" alt="PassManage">
   <div style="color: rgb(0, 78, 109); font-size: 130%; cursor: default">PassManage</div>
   <div style="width: 5%"></div>
-  <input type="text" style="width:75%" data-role="input" data-search-button="true">
+  <input type="text" style="width:75%" data-role="input" data-search-button="true" data-search-button-click="custom"
+  data-on-search-button-click="searchVault">
   <div style="width: 5%"></div>
   <div class="pos-relative">
     <a class="brand dropdown-toggle" style="cursor:pointer">
@@ -31,15 +53,21 @@
   </div>
   <div style="width: 1%"></div>
 </div>
-<div style="padding-top:5%"></div>
-<div id="vaultDisplay" class="grid" style="overflow-y:auto; overflow-x:hidden; width:100%">
+<div id="vaultDisplay" class="grid" style="overflow-y:auto; overflow-x:hidden; width:100%; height:95%; margin-top: 4%;">
   <div id="row1" class="row">
 
   </div>
 </div>
-<div id="message"></div>
-<button class="button primary" onclick="openAddSite()">Add Site</button>
-<button class="button primary" onclick="clearDialog()">Clear Vault</button>
+<div class='floatButtons' id='addSite'>
+  <button class='action-button bg-lightBlue fg-white' title='Add Site' onclick='openAddSite()'>
+    <span class='icon'><span class="mif-plus"></span></span>
+  </button>
+</div>
+<div class='floatButtons' id='clearVault'>
+  <button class='action-button bg-lightRed fg-white' title='Clear Vault' onclick='clearDialog()'>
+    <span class='icon'><span class="mif-bin"></span></span>
+  </button>
+</div>
 <script>
   document.body.onload = initialize;
 </script>
