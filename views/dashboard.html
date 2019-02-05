@@ -27,9 +27,37 @@
     visibility: hidden;
     margin-right: 2%;
   }
+  .empty {
+    text-align: center !important;
+  }
   .row {
-    text-align: center;
+    text-align: left;
     font-size:150%;
+  }
+  .card-header {
+    padding: 8%;
+    height: 5%;
+    background-repeat: no-repeat;
+    background-color: white;
+    height: 8% !important;
+    background-size: contain !important;
+  }
+  .text {
+    margin-left: 3%;
+    width: 50%;
+    font-size:120%;
+  }
+  .card-footer{
+    padding: 1%;
+  }
+  .card-footer>button {
+    visibility: hidden;
+  }
+  .delete {
+    margin-right: 4%;
+  }
+  .edit {
+    font-weight: bold;
   }
 </style>
 {% endblock %}
@@ -37,11 +65,11 @@
 {% block content %}
 <div data-role="appbar" style="height: 8%" data-expand-point="md">
   <div style="width: 1%"></div>
-  <img src="/public/images/favicon.jpg" style="height: 90%; padding-right: 0.5%" alt="PassManage">
+  <img src="/public/images/logo.jpg" style="height: 90%; padding-right: 0.5%" alt="PassManage">
   <div style="color: rgb(0, 78, 109); font-size: 130%; cursor: default">PassManage</div>
   <div style="width: 5%"></div>
   <input type="text" style="width:75%" data-role="input" data-search-button="true" data-search-button-click="custom"
-  data-on-search-button-click="searchVault">
+  data-on-search-button-click="searchVault" placeholder="Search Vault">
   <div style="width: 5%"></div>
   <div class="pos-relative">
     <a class="brand dropdown-toggle" style="cursor:pointer">
@@ -54,13 +82,10 @@
   </div>
   <div style="width: 1%"></div>
 </div>
-<div id="vaultDisplay" class="grid" style="overflow-y:auto; overflow-x:hidden; width:100%; height:95%; margin-top: 4%;">
-  <div id="row1" class="row">
-
-  </div>
+<div id="vaultDisplay" class="grid" style="overflow-y:auto; overflow-x:hidden; width:100%; height:95%; margin-top: 5%;">
 </div>
 <div class='floatButtons' id='addSite'>
-  <button class='action-button bg-lightBlue fg-white' title='Add Site' onclick='openAddSite()'>
+  <button class='action-button primary' title='Add Site' onclick='openAddSite()'>
     <span class='icon'><span class="mif-plus"></span></span>
   </button>
 </div>
