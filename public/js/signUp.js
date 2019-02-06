@@ -4,12 +4,12 @@ function setupEnterKeyListeners() {
       newUser();
     }
   });
-  document.getElementsByClassName('password')[0].addEventListener('keyup', function(e) {
+  document.getElementById('password1').addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
       newUser();
     }
   });
-  document.getElementsByClassName('password')[1].addEventListener('keyup', function(e) {
+  document.getElementById('password2').addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
       newUser();
     }
@@ -20,8 +20,8 @@ function setupEnterKeyListeners() {
 
 function newUser() {
   var username = document.getElementById('username').value.trim();
-  var password = document.getElementsByClassName('password')[0].value.trim();
-  var passwordCheck = document.getElementsByClassName('password')[1].value.trim();
+  var password = document.getElementById('password1').value.trim();
+  var passwordCheck = document.getElementById('password2').value.trim();
   if (username == '') {
     document.getElementById('error').innerText = '⚠️ Username field required!';
   }
