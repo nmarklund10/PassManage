@@ -247,5 +247,23 @@ app.post('/updateVault', function(req, res) {
   });
 });
 
+app.post('/deleteAccount', function(req, res) {
+  var deleteInfo = req.body;
+  findUser(deleteInfo.username).then(function(userInfo) {
+    if (userInfo) {
+      if (userInfo.hash == sha256(hexToBin(userInfo.salt) + deleteInfo.hash)) {
+        deleteUser(userInfo.username);
+        sendSuccess(res);
+      }
+      else {
+        sendError(res, 'Incorrect Password!');
+      }
+    }
+    else {
+      sendError(res, 'User not found!');
+    }
+  });
+});
+
 httpsServer.listen(port, () => console.log('Listening on https://localhost:' + port));
 httpServer.listen(80)
