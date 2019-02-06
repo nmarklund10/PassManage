@@ -1,19 +1,18 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
-var router = express.Router();
 var sha256 = require('sha256');
 var randomNumber = require('csprng');
-var fs = require('fs');
+// var fs = require('fs');
 var http = require('http');
-var https = require('https');
-var privateKey = fs.readFileSync('certificates/server.key', 'utf8');
-var certificate = fs.readFileSync('certificates/server.cert', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
+// var https = require('https');
+// var privateKey = fs.readFileSync('certificates/server.key', 'utf8');
+// var certificate = fs.readFileSync('certificates/server.cert', 'utf8');
+// var credentials = {key: privateKey, cert: certificate};
+// var httpsServer = https.createServer(credentials, app);
 var path = require('path')
-var httpsServer = https.createServer(credentials, app);
 var httpServer = http.createServer(app);
-var port = 443;
+var port = process.env.PORT | 8000;
 var session = require('express-session');
 var csrf = require('csurf');
 var nunjucks = require('nunjucks');
@@ -28,17 +27,6 @@ function hexToBin(hexStr) {
     bytes[i] = parseInt(hexStr.substr(i * 2, 2), 16);
   }
   return bytes;
-}
-
-function binToHex(byteArr) {
-  var hexStr = '';
-  for (var i = 0; i < byteArr.length; i++) {
-    if (byteArr[i] < 16){
-      hexStr += '0';
-    }
-    hexStr += byteArr[i].toString(16);
-  }
-  return hexStr
 }
 
 function sendJSON(res, obj={}) {
@@ -128,7 +116,7 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   cookie: {
-    secure: true,
+    secure: false,
     httpOnly: true,
     // Cookie will expire in 1 hour from when it's generated
     expires: new Date(Date.now() + 60 * 60 * 1000)
@@ -140,18 +128,17 @@ nunjucks.configure('views', {
   express: app
 });
 
-app.use(csrf());
-app.use(router);
-app.use(bodyParser.json());
+// app.use(function(req, res, next) {
+//   if (req.secure) {
+//     next();
+//   }
+//   else {
+//     res.redirect('https://' + req.headers.host + ':' + port + req.url);
+//   }
+// });
 
-app.use(function(req, res, next) {
-  if (req.secure) {
-    next();
-  }
-  else {
-    res.redirect('https://' + req.headers.host + ':' + port + req.url);
-  }
-});
+app.use(bodyParser.json());
+app.use(csrf());
 
 app.use('/home', function(req, res, next) {
   if (!req.body.token) {
@@ -265,5 +252,5 @@ app.post('/deleteAccount', function(req, res) {
   });
 });
 
-httpsServer.listen(port, () => console.log('Listening on https://localhost:' + port));
-httpServer.listen(80)
+// httpsServer.listen(port, () => console.log('Listening on https://localhost:' + port));
+httpServer.listen(port, () => console.log('Listening on http://localhost:' + port));
