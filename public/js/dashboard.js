@@ -8,6 +8,71 @@ function generateCounter() {
   return ctr.toString(16);
 }
 
+function showDeleteAccount() {
+  var clearVaultVisibility = document.getElementsByClassName('action-button')[1].style.visibility;
+  hideFloatingButtons();
+  var dialog = Metro.dialog.create({
+    title: 'This will delete your account PERMANENTLY!',
+    actions: [
+      {
+        caption: 'I don\'t need this account',
+        cls: 'primary',
+        onclick: function() {
+          Metro.dialog.create({
+            content: '<div class="p-1"></div> \
+                      <input type="password" placeholder="Type Password to Delete Account" data-role="input" id="password"/> \
+                      <div class="p-1" style="color: red" id="error"></div>',
+            actions: [
+              {
+                title: 'Are you really sure?',
+                caption: 'Pull the Trigger',
+                cls: 'js-dialog-close primary',
+                onclick: function() {
+                  document.getElementById('error').innerText = '';
+                  var username = window.sessionStorage['user'];
+                  var password = document.getElementById('password').value.trim();
+                  var hash = sha256(username + password);
+                  for (var i = 0; i < 5000; i++) {
+                    hash = sha256(hash);
+                  }
+                  var deleteData = {username: username, hash: hash};
+                  sendPostRequest('/deleteAccount', deleteData, function(response) {
+                    if (response.success) {
+                      clearSession();
+                      Metro.dialog.close(dialog);
+                      window.location = '/';
+                    }
+                    else {
+                      document.getElementById('error').innerText = response.message;
+                    }
+                  });
+                }
+              },
+              {
+                caption: 'Cancel',
+                cls: 'js-dialog-close secondary',
+                onclick: function() {
+                  Metro.dialog.close(dialog);
+                  document.getElementsByClassName('action-button')[0].style.visibility = 'visible';
+                  document.getElementsByClassName('action-button')[1].style.visibility = clearVaultVisibility;
+                }
+              }
+            ]
+          });
+        }
+      },
+      {
+        caption: 'Cancel',
+        cls: 'js-dialog-close secondary',
+        onclick: function() {
+          document.getElementsByClassName('action-button')[0].style.visibility = 'visible';
+          document.getElementsByClassName('action-button')[1].style.visibility = clearVaultVisibility;
+        }
+      }
+    ]
+  });
+}
+
 function updateVault(vault, ctr) {
   var updateData = {
     vault: vault,
