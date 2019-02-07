@@ -130,14 +130,14 @@ nunjucks.configure('views', {
   express: app
 });
 
-// app.use(function(req, res, next) {
-//   if (req.secure) {
-//     next();
-//   }
-//   else {
-//     res.redirect('https://' + req.headers.host + ':' + port + req.url);
-//   }
-// });
+app.use(function(req, res, next) {
+  if (req.secure) {
+    next();
+  }
+  else {
+    res.redirect('https://' + req.headers.host + ':' + port + req.url);
+  }
+});
 
 app.use(bodyParser.json());
 app.use(csrf());
