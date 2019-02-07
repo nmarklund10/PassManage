@@ -111,6 +111,15 @@ function deleteUser(username) {
   });
 }
 
+app.use(function(req, res, next) {
+  if (req.secure) {
+    next();
+  }
+  else {
+    res.redirect('https://' + req.headers.host + req.url);
+  }
+});
+
 app.use(session({
   name: 'session',
   secret: randomNumber(8, 16),
@@ -128,15 +137,6 @@ app.use(session({
 nunjucks.configure('views', {
   autoescape: true,
   express: app
-});
-
-app.use(function(req, res, next) {
-  if (req.secure) {
-    next();
-  }
-  else {
-    res.redirect('https://' + req.headers.host + ':' + port + req.url);
-  }
 });
 
 app.use(bodyParser.json());
