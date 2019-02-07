@@ -18,6 +18,7 @@ var csrf = require('csurf');
 var nunjucks = require('nunjucks');
 var Sequelize = require('sequelize');
 var pg = require('pg');
+var sslRedirect = require('heroku-ssl-redirect');
 
 var sessions = {};
 
@@ -111,14 +112,6 @@ function deleteUser(username) {
   });
 }
 
-app.use(function(req, res, next) {
-  if(req.protocol !== 'https') {
-      return res.status(403).send({message: 'Go to https:// version'});
-  }
-  // allow the request to continue
-  next();
-});
-
 // app.use(function(req, res, next) {
 //   if (req.secure) {
 //     next();
@@ -146,6 +139,8 @@ nunjucks.configure('views', {
   autoescape: true,
   express: app
 });
+
+app.use(sslRedirect());
 
 app.use(bodyParser.json());
 app.use(csrf());
