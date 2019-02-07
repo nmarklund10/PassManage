@@ -12,7 +12,7 @@ var http = require('http');
 // var httpsServer = https.createServer(credentials, app);
 var path = require('path')
 var httpServer = http.createServer(app);
-var port = process.env.PORT | 8000;
+var port = process.env.PORT || 8000;
 var session = require('cookie-session');
 var csrf = require('csurf');
 var nunjucks = require('nunjucks');
@@ -114,7 +114,6 @@ function deleteUser(username) {
 app.use(session({
   name: 'session',
   secret: randomNumber(8, 16),
-  // Cookie Options
   maxAge: 60 * 60 * 1000 // 1 hours
   // resave: true,
   // saveUninitialized: true,
