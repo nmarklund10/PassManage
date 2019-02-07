@@ -112,13 +112,21 @@ function deleteUser(username) {
 }
 
 app.use(function(req, res, next) {
-  if (req.secure) {
-    next();
+  if(req.protocol !== 'https') {
+      return res.status(403).send({message: 'Go to https:// version'});
   }
-  else {
-    res.redirect('https://' + req.headers.host + req.url);
-  }
+  // allow the request to continue
+  next();
 });
+
+// app.use(function(req, res, next) {
+//   if (req.secure) {
+//     next();
+//   }
+//   else {
+//     res.redirect('https://' + req.headers.host + req.url);
+//   }
+// });
 
 app.use(session({
   name: 'session',
