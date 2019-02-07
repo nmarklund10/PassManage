@@ -13,7 +13,7 @@ var http = require('http');
 var path = require('path')
 var httpServer = http.createServer(app);
 var port = process.env.PORT | 8000;
-var session = require('express-session');
+var session = require('cookie-session');
 var csrf = require('csurf');
 var nunjucks = require('nunjucks');
 var Sequelize = require('sequelize');
@@ -112,15 +112,18 @@ function deleteUser(username) {
 }
 
 app.use(session({
+  name: 'session',
   secret: randomNumber(8, 16),
-  resave: true,
-  saveUninitialized: true,
-  cookie: {
-    secure: false,
-    httpOnly: true,
-    // Cookie will expire in 1 hour from when it's generated
-    expires: new Date(Date.now() + 60 * 60 * 1000)
-  }
+  // Cookie Options
+  maxAge: 60 * 60 * 1000 // 1 hours
+  // resave: true,
+  // saveUninitialized: true,
+  // cookie: {
+  //   secure: false,
+  //   httpOnly: true,
+  //   // Cookie will expire in 1 hour from when it's generated
+  //   expires: new Date(Date.now() + 60 * 60 * 1000)
+  // }
 }));
 
 nunjucks.configure('views', {
