@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="350" height="350" src="logo.png" alt="npass">
+  <img width="350" height="350" src="/public/images/logo.png" alt="npass">
 </p>
 <p align="center">
   :key: <em>a password manager that will change your life</em> :lock:
