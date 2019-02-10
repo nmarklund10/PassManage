@@ -66,7 +66,7 @@ function removeSession(token) {
   delete sessions[token];
 }
 
-var connStr = "postgres://dolboqpe:TNtV1OkpdshJq_oaRbTZB3xKdowhK8Jy@stampy.db.elephantsql.com:5432/dolboqpe";
+var connStr = 'postgres://stfrvvqx:EoQIbP57QNoFh-pzL0xMW0tEYlW3DQ8k@stampy.db.elephantsql.com:5432/stfrvvqx';
 const sequelize = new Sequelize(connStr, {
   dialect: 'postgres',
   operatorsAliases: false
@@ -74,7 +74,7 @@ const sequelize = new Sequelize(connStr, {
 
 const Users = sequelize.define('users', {
   username: Sequelize.STRING(20),
-  hash: Sequelize.STRING(256),
+  hash: Sequelize.STRING(64),
   salt: Sequelize.STRING(16),
   ctr: Sequelize.STRING(32),
   vault: Sequelize.STRING(65535)
@@ -140,7 +140,9 @@ nunjucks.configure('views', {
   express: app
 });
 
-app.use(sslRedirect());
+if (port != 8000) {
+  app.use(sslRedirect());
+}
 
 app.use(bodyParser.json());
 app.use(csrf());
