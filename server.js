@@ -12,7 +12,7 @@ var http = require('http');
 // var httpsServer = https.createServer(credentials, app);
 var path = require('path')
 var httpServer = http.Server(app);
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 80;
 var session = require('cookie-session');
 var csrf = require('csurf');
 var nunjucks = require('nunjucks');
@@ -66,7 +66,7 @@ function removeSession(token) {
   delete sessions[token];
 }
 
-var connStr = 'postgres://stfrvvqx:EoQIbP57QNoFh-pzL0xMW0tEYlW3DQ8k@stampy.db.elephantsql.com:5432/stfrvvqx';
+var connStr = process.env.DB;
 const sequelize = new Sequelize(connStr, {
   dialect: 'postgres',
   operatorsAliases: false
