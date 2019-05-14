@@ -69,7 +69,6 @@ function removeSession(token) {
 var connStr = process.env.DB;
 const sequelize = new Sequelize(connStr, {
   dialect: 'postgres',
-  operatorsAliases: false
 });
 
 const Users = sequelize.define('users', {
